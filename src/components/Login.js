@@ -1,22 +1,62 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
 
-const Login = () => {
+const initialValues = {
+  username: "Lambda School",
+  password: "i<3Lambd4"
+}
+
+const Login = (props) => {
+  const [formValues, setFormValues] = useState(initialValues);
+  const [error, setError] = useState([]);
   // make a post request to retrieve a token from the api
   // when you have handled the token, navigate to the BubblePage route
+  
+  const handleChange = e => {
+    setFormValues({...formValues, [e.target.name]:[e.target.value]})
+  }
+  
+  const handleLogin = e => {
+    e.preventDefault();
+    axios.post('http://localhost:5000/api/login', formValues)
+      .then(res => {
+        localStorage.setItem("token", res.data.payload);
+        props.history.push('/bubble-page')
+      })
+      .catch(err => {
+        //console.log({err});
+        setError(err.response.data.error);
+      })
+  }
 
   useEffect(()=>{
     // make a post request to retrieve a token from the api
     // when you have handled the token, navigate to the BubblePage route
   });
   
-  const error = "";
-  //replace with error state
-
   return (
     <div>
       <h1>Welcome to the Bubble App!</h1>
       <div data-testid="loginForm" className="login-form">
-        <h2>Build login form here</h2>
+        <form onSubmit={handleLogin}>
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              name="username"
+              value={formValues.username}
+              onChange={handleChange}
+              data-testid="username"
+            />
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={formValues.password}
+              onChange={handleChange}
+              data-testid="password"
+            />
+            <button>Log in</button>
+          </form>
       </div>
 
       <p data-testid="errorMessage" className="error">{error}</p>
