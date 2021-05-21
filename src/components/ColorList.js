@@ -22,10 +22,13 @@ const ColorList = ({ colors, updateColors }) => {
     e.preventDefault();
     axiosWithAuth().put(`/colors/${colorToEdit.id}`, colorToEdit)
 			.then(res => {
-        console.log('data',res.data);
-        //const color = colors.find((color) => color.id === res.data.id)
-        //console.log(color);
-				//updateColors(color);
+        axiosWithAuth().get('/colors')
+        .then(res => {
+          updateColors(res.data)
+        })
+        .catch(err => {
+          console.log(err);
+        })
 			})
 			.catch(err => {
 				console.log(err);
